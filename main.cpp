@@ -259,22 +259,55 @@ void tambah_midfielder(List *l) {
     }
 }
 
+void tambah_defender(List *l) {
+    string nama;
+    Role *defender = ((l->head)->next)->next;
+
+    if (is_role_full(defender)) {
+        cout << "Maaf, role Defender sudah penuh." << endl;
+    } else {
+        cout << "Masukan nama player : "; cin >> nama;
+        if (is_player_ada(l, nama)) {
+            cout << "Maaf, " << nama << " sudah terdaftar di list pemain." << endl;
+        } else {
+            alokasi_player(nama);
+            if (is_no_player(defender)) {
+                defender->pemain_pertama = new_player;
+            } else {
+                Player *cursor = defender->pemain_pertama;
+                while (cursor->next != NULL) {
+                    cursor = cursor->next;
+                }
+                cursor->next = new_player;
+            }
+
+            cout << nama << " berhasil ditambahkan ke Defender" << endl;
+            defender->isi ++;
+        }
+    }
+}
+
 
 int main() {
     List strategi1;
-    int formasi[3] = {4, 3, 3};
+    int formasi[3] = {2, 2, 2};
     buat_formasi(&strategi1, formasi);
     cetak_role(&strategi1);
 
+    // // test tambah_striker()
     // tambah_striker(&strategi1);
     // tambah_striker(&strategi1);
     // tambah_striker(&strategi1);
-    tambah_midfielder(&strategi1);
-    tambah_midfielder(&strategi1);
-    tambah_midfielder(&strategi1);
-    tambah_midfielder(&strategi1);
-    tambah_midfielder(&strategi1);
-    tambah_midfielder(&strategi1);
+
+    // // test tambah_midfielder()
+    // tambah_midfielder(&strategi1);
+    // tambah_midfielder(&strategi1);
+    // tambah_midfielder(&strategi1);
+
+    // test tambah_defender()
+    tambah_defender(&strategi1);
+    tambah_defender(&strategi1);
+    tambah_defender(&strategi1);
     
     return 0;
 }
