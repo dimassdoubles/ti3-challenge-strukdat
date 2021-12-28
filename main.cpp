@@ -292,10 +292,10 @@ void hapus_striker(List *l) {
     string nama;
     Role *striker = l->head;
 
-    cout << "Masukan nama player: "; cin >> nama;
     if (is_no_player(striker)) {
         cout << "Role Striker kosong" << endl;
     } else {
+        cout << "Masukan nama player: "; cin >> nama;
         Player *cursor = striker->pemain_pertama;
         Player *before;
         Player *after;
@@ -320,6 +320,81 @@ void hapus_striker(List *l) {
         } else {
             delete deleted;
             cout << nama << " berhasil dihapus" << endl;
+            striker->isi --;
+        }
+    }
+}
+
+void hapus_midfielder(List *l) {
+    string nama;
+    Role *midfielder = (l->head)->next;
+
+    if (is_no_player(midfielder)) {
+        cout << "Role Midfielder kosong" << endl;
+    } else {
+        cout << "Masukan nama player: "; cin >> nama;
+        Player *cursor = midfielder->pemain_pertama;
+        Player *before;
+        Player *after;
+        Player *deleted = new Player;
+        deleted = nullptr;
+        if (cursor->nama_player == nama) {
+            deleted = cursor;
+        } else {
+            while (cursor->next != NULL) {
+                before = cursor;
+                cursor = cursor->next;
+                after = cursor->next;
+                if (cursor->nama_player == nama) {
+                    deleted = cursor;
+                    before->next = after;
+                }
+            }
+        }
+
+        if (deleted == NULL) {
+            cout << nama << " tidak ada di role Midfielder" << endl;
+        } else {
+            delete deleted;
+            cout << nama << " berhasil dihapus" << endl;
+            midfielder->isi --;
+        }
+    }
+}
+
+void hapus_defender(List *l) {
+    string nama;
+    Role *defender = ((l->head)->next)->next;
+
+    if (is_no_player(defender)) {
+        cout << "Role Defender kosong" << endl;
+    } else {
+        cout << "Masukan nama player: "; cin >> nama;
+        Player *cursor = defender->pemain_pertama;
+        Player *before;
+        Player *after;
+        Player *deleted = new Player;
+        deleted = nullptr;
+        if (cursor->nama_player == nama) {
+            deleted = cursor;
+        } else {
+            while (cursor->next != NULL) {
+                before = cursor;
+                cursor = cursor->next;
+                after = cursor->next;
+                if (cursor->nama_player == nama) {
+                    deleted = cursor;
+                    before->next = after;
+                }
+            }
+        }
+
+        if (deleted == NULL) {
+            cout << nama << " tidak ada di role Midfielder" << endl;
+        } else {
+            delete deleted;
+            cout << nama << " berhasil dihapus" << endl;
+            defender->isi --;
         }
     }
 }
@@ -331,23 +406,29 @@ int main() {
     buat_formasi(&strategi1, formasi);
     cetak_role(&strategi1);
 
-    // test tambah_striker()
-    tambah_striker(&strategi1);
-    tambah_striker(&strategi1);
-    tambah_striker(&strategi1);
+    // // test tambah_striker()
+    // tambah_striker(&strategi1);
+    // tambah_striker(&strategi1);
+    // tambah_striker(&strategi1);
 
-    // // test tambah_midfielder()
-    // tambah_midfielder(&strategi1);
-    // tambah_midfielder(&strategi1);
-    // tambah_midfielder(&strategi1);
+    // test tambah_midfielder()
+    tambah_midfielder(&strategi1);
+    tambah_midfielder(&strategi1);
+    tambah_midfielder(&strategi1);
 
     // // test tambah_defender()
     // tambah_defender(&strategi1);
     // tambah_defender(&strategi1);
     // tambah_defender(&strategi1);
 
-    // test hapus_striker()
-    hapus_striker(&strategi1);
+    // // test hapus_striker()
+    // hapus_striker(&strategi1);
+
+    // test hapus_midfielder()
+    hapus_midfielder(&strategi1);
+
+    // test hapus_defender()
+    hapus_defender(&strategi1);
     
     return 0;
 }
