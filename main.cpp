@@ -117,6 +117,7 @@ bool cek_striker(List *l, string nama_player) {
             return false;
         }
         while (cursor->next != NULL) {
+            cursor = cursor->next;
             if (cursor->nama_player == nama_player) {
                 // cout << nama_player << " ada di role striker" << endl;
                 return false;
@@ -138,6 +139,7 @@ bool cek_midfielder(List *l, string nama_player) {
             return false;
         }
         while (cursor->next != NULL) {
+            cursor = cursor->next;
             if (cursor->nama_player == nama_player) {
                 return false;
             }
@@ -157,6 +159,8 @@ bool cek_defender(List *l, string nama_player) {
             return false;
         }
         while (cursor->next != NULL) {
+            cursor = cursor->next;
+
             if (cursor->nama_player == nama_player) {
                 return false;
             }
@@ -176,6 +180,7 @@ bool cek_goalkeeper(List *l, string nama_player) {
             return false;
         }
         while (cursor->next != NULL) {
+            cursor = cursor->next;
             if (cursor->nama_player == nama_player) {
                 return false;
             }
@@ -189,8 +194,10 @@ bool cek_goalkeeper(List *l, string nama_player) {
 bool is_player_ada(List *l, string nama) {
     bool player_tidak_ada = cek_striker(l, nama) && cek_midfielder(l, nama) && cek_defender(l, nama) && cek_goalkeeper(l, nama);
     if (player_tidak_ada) {
+        cout << "player tidak ada" << endl;
         return false;
     }
+    cout << "player ada" << endl;
     return true;
 }
 
@@ -348,6 +355,7 @@ void hapus_midfielder(List *l) {
                 if (cursor->nama_player == nama) {
                     deleted = cursor;
                     before->next = after;
+                    break;
                 }
             }
         }
@@ -385,6 +393,7 @@ void hapus_defender(List *l) {
                 if (cursor->nama_player == nama) {
                     deleted = cursor;
                     before->next = after;
+                    break;
                 }
             }
         }
@@ -399,22 +408,68 @@ void hapus_defender(List *l) {
     }
 }
 
+void subtitusi_striker(List *l) {
+    string nama_diganti;
+    string nama_pengganti;
+    Role *striker = l->head;
+    Player *cursor = striker->pemain_pertama;
+    Player *before;
+    Player *deleted = new Player;
+    deleted = nullptr;
+    Player *after;
+    cout << "Masukan nama player yang ingin diganti: "; cin >> nama_diganti;
+
+    if (is_no_player(striker)) {
+        cout << "Role Striker kosong" << endl;
+    } else {
+        if (cursor->nama_player == nama_diganti) {
+            deleted = cursor;
+        } else {
+            while (cursor->next != NULL) {
+                before = cursor;
+                cursor = cursor->next;
+                after = cursor->next;
+                if (cursor->nama_player == nama_diganti) {
+                    deleted = cursor;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (deleted == NULL) {
+        cout << nama_diganti << " tidak ada di role Striker" << endl;
+    } else {
+        cout << "Masukan nama player pengganti: "; cin >> nama_pengganti;
+        if (is_player_ada(l, nama_pengganti)) {
+            cout << "Maaf, player pengganti sudah terdaftar di list pemain" << endl;
+        } else {
+            delete deleted;
+            alokasi_player(nama_pengganti);
+            before->next = new_player;
+            new_player->next = after;
+            cout << "Berhasil mengganti " << nama_diganti << ", dengan " << nama_pengganti << endl;
+        }
+    }
+
+}
+
 
 int main() {
     List strategi1;
-    int formasi[3] = {2, 2, 2};
+    int formasi[3] = {10, 2, 2};
     buat_formasi(&strategi1, formasi);
     cetak_role(&strategi1);
 
-    // // test tambah_striker()
-    // tambah_striker(&strategi1);
-    // tambah_striker(&strategi1);
-    // tambah_striker(&strategi1);
+    // test tambah_striker()
+    tambah_striker(&strategi1);
+    tambah_striker(&strategi1);
 
-    // test tambah_midfielder()
-    tambah_midfielder(&strategi1);
-    tambah_midfielder(&strategi1);
-    tambah_midfielder(&strategi1);
+
+    // // test tambah_midfielder()
+    // tambah_midfielder(&strategi1);
+    // tambah_midfielder(&strategi1);
+    // tambah_midfielder(&strategi1);
 
     // // test tambah_defender()
     // tambah_defender(&strategi1);
@@ -424,11 +479,14 @@ int main() {
     // // test hapus_striker()
     // hapus_striker(&strategi1);
 
-    // test hapus_midfielder()
-    hapus_midfielder(&strategi1);
+    // // test hapus_midfielder()
+    // hapus_midfielder(&strategi1);
 
-    // test hapus_defender()
-    hapus_defender(&strategi1);
+    // // test hapus_defender()
+    // hapus_defender(&strategi1);
+
+    // test subtitusi_striker()
+    subtitusi_striker(&strategi1);
     
     return 0;
 }
