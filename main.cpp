@@ -591,7 +591,44 @@ void tampil_striker(List *l) {
 }
 
 
+void tampil_midfielder(List *l) {
+    Role *midfielder = (l->head)->next;
+    Player *cursor = midfielder->pemain_pertama;
+    int i = 1;
 
+    if (is_no_player(midfielder)) {
+        cout << "Role Midfielder kosong" << endl;
+    } else {
+        cout << "Daftar pemain di Role Midfielder: " << endl;
+        cout << i << ". " << cursor->nama_player << endl;
+        while (cursor->next != NULL) {
+            cursor = cursor->next;
+            i ++;
+            cout << i << ". " << cursor->nama_player << endl;
+        }
+    }
+    
+}
+
+
+void tampil_defender(List *l) {
+    Role *defender = ((l->head)->next)->next;
+    Player *cursor = defender->pemain_pertama;
+    int i = 1;
+
+    if (is_no_player(defender)) {
+        cout << "Role Defender kosong" << endl;
+    } else {
+        cout << "Daftar pemain di Role Defender: " << endl;
+        cout << i << ". " << cursor->nama_player << endl;
+        while (cursor->next != NULL) {
+            cursor = cursor->next;
+            i ++;
+            cout << i << ". " << cursor->nama_player << endl;
+        }
+    }
+    
+}
 
 int main() {
     List strategi1;
