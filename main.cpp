@@ -7,6 +7,7 @@ string MIDFIELDER = "Midfielder";
 string DEFENDER = "Defender";
 string GOALKEEPER = "Goalkeeper";
 
+
 struct Player {
     string role;
     string nama_player;
@@ -19,7 +20,9 @@ struct Player {
     Player *next = nullptr;
 };
 
+
 Player *new_player = new Player;
+
 
 struct Role {
     int kapasitas = 0;
@@ -38,6 +41,7 @@ struct Role {
 
 };
 
+
 struct List {
     // kondisi awal List yang baru dibuat
     // adalah belum memiliki list Role
@@ -45,6 +49,7 @@ struct List {
     // maka pointer head tidak menunjuk kemanapun
     Role *head = nullptr;
 };
+
 
 void tambah_role(List *l, string nama, int kapasitas) {
     bool is_empty = l->head == NULL;
@@ -63,6 +68,7 @@ void tambah_role(List *l, string nama, int kapasitas) {
     }
 }
 
+
 void cetak_role(List* l) {
     Role *cursor = new Role;
     cursor = l->head;
@@ -76,6 +82,7 @@ void cetak_role(List* l) {
     }
 }
 
+
 void buat_formasi(List *l, int kapasitas[3]) {
     tambah_role(l, STRIKER, kapasitas[0]);
     tambah_role(l, MIDFIELDER, kapasitas[1]);
@@ -85,12 +92,14 @@ void buat_formasi(List *l, int kapasitas[3]) {
     tambah_role(l, GOALKEEPER, 1);
 }
 
+
 bool is_no_player(Role *r) {
     if (r->pemain_pertama == NULL) {
         return true;
     } 
     return false;
 }
+
 
 bool is_role_full(Role *r) {
     if (r->isi >= r->kapasitas) {
@@ -99,12 +108,14 @@ bool is_role_full(Role *r) {
     return false;
 }
 
+
 bool is_sama(Player *p, string nama_player) {
     if (p->nama_player == nama_player) {
         return true;
     }
     return false;
 }
+
 
 bool cek_striker(List *l, string nama_player) {
     // cout << "cek_striker: ";
@@ -130,6 +141,7 @@ bool cek_striker(List *l, string nama_player) {
     return true;
 }
 
+
 bool cek_midfielder(List *l, string nama_player) {
     Role *midfielder = (l->head)->next;
     Player *cursor = midfielder->pemain_pertama;
@@ -149,6 +161,7 @@ bool cek_midfielder(List *l, string nama_player) {
 
     return true;
 }
+
 
 bool cek_defender(List *l, string nama_player) {
     Role *defender = ((l->head)->next)->next;
@@ -171,6 +184,7 @@ bool cek_defender(List *l, string nama_player) {
     return true;
 }
 
+
 bool cek_goalkeeper(List *l, string nama_player) {
     Role *goalkeeper = (((l->head)->next)->next)->next;
     Player *cursor = goalkeeper->pemain_pertama;
@@ -191,6 +205,7 @@ bool cek_goalkeeper(List *l, string nama_player) {
     return true;
 }
 
+
 bool is_player_ada(List *l, string nama) {
     bool player_tidak_ada = cek_striker(l, nama) && cek_midfielder(l, nama) && cek_defender(l, nama) && cek_goalkeeper(l, nama);
     if (player_tidak_ada) {
@@ -201,12 +216,14 @@ bool is_player_ada(List *l, string nama) {
     return true;
 }
 
+
 void alokasi_player(string nama) {
     Player *temp = new Player;
     temp->nama_player = nama;
 
     new_player = temp;
 }
+
 
 void tambah_striker(List *l) {
     string nama;
@@ -238,6 +255,7 @@ void tambah_striker(List *l) {
 
 }
 
+
 void tambah_midfielder(List *l) {
     string nama;
     Role *midfielder = (l->head)->next;
@@ -265,6 +283,7 @@ void tambah_midfielder(List *l) {
         }
     }
 }
+
 
 void tambah_defender(List *l) {
     string nama;
@@ -332,6 +351,7 @@ void hapus_striker(List *l) {
     }
 }
 
+
 void hapus_midfielder(List *l) {
     string nama;
     Role *midfielder = (l->head)->next;
@@ -369,6 +389,7 @@ void hapus_midfielder(List *l) {
         }
     }
 }
+
 
 void hapus_defender(List *l) {
     string nama;
@@ -408,6 +429,7 @@ void hapus_defender(List *l) {
     }
 }
 
+
 void subtitusi_striker(List *l) {
     string nama_diganti;
     string nama_pengganti;
@@ -439,6 +461,100 @@ void subtitusi_striker(List *l) {
 
     if (deleted == NULL) {
         cout << nama_diganti << " tidak ada di role Striker" << endl;
+    } else {
+        cout << "Masukan nama player pengganti: "; cin >> nama_pengganti;
+        if (is_player_ada(l, nama_pengganti)) {
+            cout << "Maaf, player pengganti sudah terdaftar di list pemain" << endl;
+        } else {
+            delete deleted;
+            alokasi_player(nama_pengganti);
+            before->next = new_player;
+            new_player->next = after;
+            cout << "Berhasil mengganti " << nama_diganti << ", dengan " << nama_pengganti << endl;
+        }
+    }
+
+}
+
+
+void subtitusi_midfielder(List *l) {
+    string nama_diganti;
+    string nama_pengganti;
+    Role *midfielder = (l->head)->next;
+    Player *cursor = midfielder->pemain_pertama;
+    Player *before;
+    Player *deleted = new Player;
+    deleted = nullptr;
+    Player *after;
+    cout << "Masukan nama player yang ingin diganti: "; cin >> nama_diganti;
+
+    if (is_no_player(midfielder)) {
+        cout << "Role Midfielder kosong" << endl;
+    } else {
+        if (cursor->nama_player == nama_diganti) {
+            deleted = cursor;
+        } else {
+            while (cursor->next != NULL) {
+                before = cursor;
+                cursor = cursor->next;
+                after = cursor->next;
+                if (cursor->nama_player == nama_diganti) {
+                    deleted = cursor;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (deleted == NULL) {
+        cout << nama_diganti << " tidak ada di role Midfielder" << endl;
+    } else {
+        cout << "Masukan nama player pengganti: "; cin >> nama_pengganti;
+        if (is_player_ada(l, nama_pengganti)) {
+            cout << "Maaf, player pengganti sudah terdaftar di list pemain" << endl;
+        } else {
+            delete deleted;
+            alokasi_player(nama_pengganti);
+            before->next = new_player;
+            new_player->next = after;
+            cout << "Berhasil mengganti " << nama_diganti << ", dengan " << nama_pengganti << endl;
+        }
+    }
+
+}
+
+
+void subtitusi_defender(List *l) {
+    string nama_diganti;
+    string nama_pengganti;
+    Role *defender = ((l->head)->next)->next;
+    Player *cursor = defender->pemain_pertama;
+    Player *before;
+    Player *deleted = new Player;
+    deleted = nullptr;
+    Player *after;
+    cout << "Masukan nama player yang ingin diganti: "; cin >> nama_diganti;
+
+    if (is_no_player(defender)) {
+        cout << "Role Defender kosong" << endl;
+    } else {
+        if (cursor->nama_player == nama_diganti) {
+            deleted = cursor;
+        } else {
+            while (cursor->next != NULL) {
+                before = cursor;
+                cursor = cursor->next;
+                after = cursor->next;
+                if (cursor->nama_player == nama_diganti) {
+                    deleted = cursor;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (deleted == NULL) {
+        cout << nama_diganti << " tidak ada di role Defender" << endl;
     } else {
         cout << "Masukan nama player pengganti: "; cin >> nama_pengganti;
         if (is_player_ada(l, nama_pengganti)) {
