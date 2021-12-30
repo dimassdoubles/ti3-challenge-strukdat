@@ -571,6 +571,28 @@ void subtitusi_defender(List *l) {
 }
 
 
+void tampil_striker(List *l) {
+    Role *striker = l->head;
+    Player *cursor = striker->pemain_pertama;
+    int i = 1;
+
+    if (is_no_player(striker)) {
+        cout << "Role Striker kosong" << endl;
+    } else {
+        cout << "Daftar pemain di Role Striker: " << endl;
+        cout << i << ". " << cursor->nama_player << endl;
+        while (cursor->next != NULL) {
+            cursor = cursor->next;
+            i ++;
+            cout << i << ". " << cursor->nama_player << endl;
+        }
+    }
+    
+}
+
+
+
+
 int main() {
     List strategi1;
     int formasi[3] = {10, 2, 2};
@@ -578,8 +600,11 @@ int main() {
     cetak_role(&strategi1);
 
     // test tambah_striker()
-    tambah_striker(&strategi1);
-    tambah_striker(&strategi1);
+    // tambah_striker(&strategi1);
+    // tambah_striker(&strategi1);
+    // tambah_striker(&strategi1);
+
+    tampil_striker(&strategi1);
 
 
     // // test tambah_midfielder()
@@ -602,7 +627,7 @@ int main() {
     // hapus_defender(&strategi1);
 
     // test subtitusi_striker()
-    subtitusi_striker(&strategi1);
+    // subtitusi_striker(&strategi1);
     
     return 0;
 }
