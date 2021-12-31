@@ -238,12 +238,14 @@ void tambah_striker(List *l) {
         } else {
             alokasi_player(nama);
             if (is_no_player(striker)) {
+                new_player->role = STRIKER;
                 striker->pemain_pertama = new_player;
             } else {
                 Player *cursor = striker->pemain_pertama;
                 while (cursor->next != NULL) {
                     cursor = cursor->next;
                 }
+                new_player->role = STRIKER;
                 cursor->next = new_player;
             }
 
@@ -269,12 +271,14 @@ void tambah_midfielder(List *l) {
         } else {
             alokasi_player(nama);
             if (is_no_player(midfielder)) {
+                new_player->role = MIDFIELDER;
                 midfielder->pemain_pertama = new_player;
             } else {
                 Player *cursor = midfielder->pemain_pertama;
                 while (cursor->next != NULL) {
                     cursor = cursor->next;
                 }
+                new_player->role = MIDFIELDER;
                 cursor->next = new_player;
             }
 
@@ -298,12 +302,14 @@ void tambah_defender(List *l) {
         } else {
             alokasi_player(nama);
             if (is_no_player(defender)) {
+                new_player->role = DEFENDER;
                 defender->pemain_pertama = new_player;
             } else {
                 Player *cursor = defender->pemain_pertama;
                 while (cursor->next != NULL) {
                     cursor = cursor->next;
                 }
+                new_player->role = DEFENDER;
                 cursor->next = new_player;
             }
 
@@ -630,29 +636,62 @@ void tampil_defender(List *l) {
     
 }
 
+
+int tampil_role(Role *r, int urutan_mulai) {
+    Player *cursor = r->pemain_pertama;
+    if (!is_no_player(r)) {
+        cout << urutan_mulai << ". " << cursor->nama_player << " (" << cursor->role << ")" << endl;
+        while (cursor->next != NULL) {
+            cursor = cursor->next;
+            urutan_mulai ++;
+            cout << urutan_mulai << ". " << cursor->nama_player << " (" << cursor->role << ")" << endl;
+        }
+    }
+
+    return urutan_mulai;
+}
+
+
+void tampil_pemain(List *l) {
+    int i = 1;
+    Role *striker = l->head;
+    Role *midfielder = (l->head)->next;
+    Role *defender = ((l->head)->next)->next;
+    Role *goalkeeper = (((l->head)->next)->next)->next;
+
+    bool is_empty = is_no_player(striker) && is_no_player(midfielder) && is_no_player(defender) && is_no_player(goalkeeper);
+
+    if (is_empty) {
+        cout << "Belum ada pemain di list pemain" << endl;
+    } else {
+        cout << "Daftar nama-nama pemain: " << endl;
+        i = tampil_role(striker, i) + 1;
+        i = tampil_role(midfielder, i) + 1;
+        i = tampil_role(defender, i) + 1;
+        i = tampil_role(goalkeeper, i) + 1;
+    }
+
+
+}
+
+
 int main() {
     List strategi1;
-    int formasi[3] = {10, 2, 2};
+    int formasi[3] = {2, 2, 2};
     buat_formasi(&strategi1, formasi);
     cetak_role(&strategi1);
 
     // test tambah_striker()
-    // tambah_striker(&strategi1);
-    // tambah_striker(&strategi1);
-    // tambah_striker(&strategi1);
-
-    tampil_striker(&strategi1);
-
+    tambah_striker(&strategi1);
+    tambah_striker(&strategi1);
 
     // // test tambah_midfielder()
-    // tambah_midfielder(&strategi1);
-    // tambah_midfielder(&strategi1);
-    // tambah_midfielder(&strategi1);
+    tambah_midfielder(&strategi1);
+    tambah_midfielder(&strategi1);
 
     // // test tambah_defender()
-    // tambah_defender(&strategi1);
-    // tambah_defender(&strategi1);
-    // tambah_defender(&strategi1);
+    tambah_defender(&strategi1);
+    tambah_defender(&strategi1);
 
     // // test hapus_striker()
     // hapus_striker(&strategi1);
@@ -665,6 +704,8 @@ int main() {
 
     // test subtitusi_striker()
     // subtitusi_striker(&strategi1);
+
+    tampil_pemain(&strategi1);
     
     return 0;
 }
