@@ -708,6 +708,48 @@ void hapus_pemain(List *l) {
     cout << "Semua pemain sudah dihapus" << endl;
 }
 
+bool ketemu_di_role(Role *r, string nama) {
+    Player *cursor = r->pemain_pertama;
+    if (!is_no_player(r)) {
+        if (cursor->nama_player == nama) {
+            cout << "Pemain ditemukan, " << cursor->nama_player << " ada di Role " << cursor->role << endl;
+            return true;
+        }
+        while (cursor->next != NULL) {
+            cursor = cursor->next;
+            if (cursor->nama_player == nama) {
+                cout << "Pemain ditemukan, " << cursor->nama_player << " ada di Role " << cursor->role << endl;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+
+void cari_pemain(List *l) {
+    Role *striker = l->head;
+    Role *midfielder = (l->head)->next;
+    Role *defender = ((l->head)->next)->next;
+    Role *goalkeeper = (((l->head)->next)->next)->next;
+    string nama;
+
+    cout << "Masukan nama player: "; cin >> nama;
+
+    if (ketemu_di_role(striker, nama)) {
+
+    } else if (ketemu_di_role(midfielder, nama)) {
+
+    } else if (ketemu_di_role(defender, nama)) {
+
+    } else if (ketemu_di_role(goalkeeper, nama)) {
+
+    } else {
+        cout << nama << " tidak ditemukan di role manapun" << endl;
+    }
+    
+}
+
 
 int main() {
     List strategi1;
@@ -737,8 +779,8 @@ int main() {
     // subtitusi_striker(&strategi1);
 
     tampil_pemain(&strategi1);
-    hapus_pemain(&strategi1);
-    tampil_pemain(&strategi1);
+    cari_pemain(&strategi1);
+    
     
     return 0;
 }
