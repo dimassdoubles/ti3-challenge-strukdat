@@ -670,27 +670,58 @@ void tampil_pemain(List *l) {
         i = tampil_role(defender, i) + 1;
         i = tampil_role(goalkeeper, i) + 1;
     }
+}
+
+void hapus_player(Player *p) {
+    Player *deleted = new Player;
+    deleted = p;
+    delete deleted;
+}
 
 
+void hapus_role(Role *r) {
+    Player *cursor = r->pemain_pertama;
+    Player *deleted = cursor;
+    if (!is_no_player(r)) {
+        while (cursor->next != NULL) {
+            cursor = cursor->next;
+            hapus_player(deleted);
+            deleted = cursor;
+        }
+        hapus_player(deleted);
+    }
+    r->pemain_pertama = nullptr;
+}
+
+
+void hapus_pemain(List *l) {
+    Role *striker = l->head;
+    Role *midfielder  = (l->head)->next;
+    Role *defender = ((l->head)->next)->next;
+    Role *goalkeeper = (((l->head)->next)->next)->next;
+
+    hapus_role(striker);
+    hapus_role(midfielder);
+    hapus_role(defender);
+    hapus_role(goalkeeper);
+    
+    cout << "Semua pemain sudah dihapus" << endl;
 }
 
 
 int main() {
     List strategi1;
-    int formasi[3] = {2, 2, 2};
+    int formasi[3] = {4, 2, 2};
     buat_formasi(&strategi1, formasi);
     cetak_role(&strategi1);
 
     // test tambah_striker()
     tambah_striker(&strategi1);
-    tambah_striker(&strategi1);
 
-    // // test tambah_midfielder()
-    tambah_midfielder(&strategi1);
+    // test tambah_midfielder()
     tambah_midfielder(&strategi1);
 
-    // // test tambah_defender()
-    tambah_defender(&strategi1);
+    // test tambah_defender()
     tambah_defender(&strategi1);
 
     // // test hapus_striker()
@@ -705,6 +736,8 @@ int main() {
     // test subtitusi_striker()
     // subtitusi_striker(&strategi1);
 
+    tampil_pemain(&strategi1);
+    hapus_pemain(&strategi1);
     tampil_pemain(&strategi1);
     
     return 0;
