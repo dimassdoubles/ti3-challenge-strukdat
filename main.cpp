@@ -337,21 +337,24 @@ void hapus_defender(List *l) {
 }
 
 
-void subtitusi_striker(List *l) {
-    string nama_diganti;
-    string nama_pengganti;
-    Role *striker = l->head;
-    Player *cursor = striker->pemain_pertama;
-    Player *before;
+void subtitusi_player(List *l, string nama_role) {
+    Role *role = pilih_role(l, nama_role);
+    Player *cursor = role->pemain_pertama;
+    Player *before = nullptr;
     Player *deleted = new Player;
     deleted = nullptr;
     Player *after;
-    cout << "Masukan nama player yang ingin diganti: "; cin >> nama_diganti;
+    bool is_pemain_pertama_diganti = false;
+    string nama_diganti;
+    string nama_pengganti;
 
-    if (is_no_player(striker)) {
-        cout << "Role Striker kosong" << endl;
+    cout << "Masukan nama player yang ingin diganti: "; cin >> nama_diganti;
+    if (is_no_player(role)) {
+        cout << "Role " << nama_role << " kosong" << endl;
     } else {
         if (cursor->nama_player == nama_diganti) {
+            is_pemain_pertama_diganti = true;
+            after = cursor->next;
             deleted = cursor;
         } else {
             while (cursor->next != NULL) {
@@ -364,117 +367,42 @@ void subtitusi_striker(List *l) {
                 }
             }
         }
-    }
 
-    if (deleted == NULL) {
-        cout << nama_diganti << " tidak ada di role Striker" << endl;
-    } else {
-        cout << "Masukan nama player pengganti: "; cin >> nama_pengganti;
-        if (is_player_sudah_ada(l, nama_pengganti)) {
-            cout << "Maaf, player pengganti sudah terdaftar di list pemain" << endl;
+        if (deleted == NULL) {
+            cout << "Maaf, " << nama_diganti << " tidak ada di role " << nama_role << endl;
         } else {
-            delete deleted;
-            alokasi_player_baru(nama_pengganti);
-            before->next = new_player;
-            new_player->next = after;
-            cout << "Berhasil mengganti " << nama_diganti << ", dengan " << nama_pengganti << endl;
+            cout << "Masukan nama player pengganti: "; cin >> nama_pengganti;
+            if (is_player_sudah_ada(l, nama_pengganti)) {
+                cout << "Maaf, " << nama_pengganti << " sudah ada di list pemain" << endl;
+            } else {
+                alokasi_player_baru(nama_pengganti);
+                new_player->role = nama_role;
+                if (is_pemain_pertama_diganti) {
+                    new_player->next = after;
+                    role->pemain_pertama = new_player;
+                } else {
+                    before->next = new_player;
+                    new_player->next = after;
+                }
+
+                delete deleted;
+            }
         }
     }
+}
 
+void subtitusi_striker(List *l) {
+    subtitusi_player(l, STRIKER);
 }
 
 
-void subtitusi_midfielder(List *l) {
-    string nama_diganti;
-    string nama_pengganti;
-    Role *midfielder = (l->head)->next;
-    Player *cursor = midfielder->pemain_pertama;
-    Player *before;
-    Player *deleted = new Player;
-    deleted = nullptr;
-    Player *after;
-    cout << "Masukan nama player yang ingin diganti: "; cin >> nama_diganti;
-
-    if (is_no_player(midfielder)) {
-        cout << "Role Midfielder kosong" << endl;
-    } else {
-        if (cursor->nama_player == nama_diganti) {
-            deleted = cursor;
-        } else {
-            while (cursor->next != NULL) {
-                before = cursor;
-                cursor = cursor->next;
-                after = cursor->next;
-                if (cursor->nama_player == nama_diganti) {
-                    deleted = cursor;
-                    break;
-                }
-            }
-        }
-    }
-
-    if (deleted == NULL) {
-        cout << nama_diganti << " tidak ada di role Midfielder" << endl;
-    } else {
-        cout << "Masukan nama player pengganti: "; cin >> nama_pengganti;
-        if (is_player_sudah_ada(l, nama_pengganti)) {
-            cout << "Maaf, player pengganti sudah terdaftar di list pemain" << endl;
-        } else {
-            delete deleted;
-            alokasi_player_baru(nama_pengganti);
-            before->next = new_player;
-            new_player->next = after;
-            cout << "Berhasil mengganti " << nama_diganti << ", dengan " << nama_pengganti << endl;
-        }
-    }
-
+void subtitusi_midfielder(List* l) {
+    subtitusi_player(l, MIDFIELDER);
 }
 
 
 void subtitusi_defender(List *l) {
-    string nama_diganti;
-    string nama_pengganti;
-    Role *defender = ((l->head)->next)->next;
-    Player *cursor = defender->pemain_pertama;
-    Player *before;
-    Player *deleted = new Player;
-    deleted = nullptr;
-    Player *after;
-    cout << "Masukan nama player yang ingin diganti: "; cin >> nama_diganti;
-
-    if (is_no_player(defender)) {
-        cout << "Role Defender kosong" << endl;
-    } else {
-        if (cursor->nama_player == nama_diganti) {
-            deleted = cursor;
-        } else {
-            while (cursor->next != NULL) {
-                before = cursor;
-                cursor = cursor->next;
-                after = cursor->next;
-                if (cursor->nama_player == nama_diganti) {
-                    deleted = cursor;
-                    break;
-                }
-            }
-        }
-    }
-
-    if (deleted == NULL) {
-        cout << nama_diganti << " tidak ada di role Defender" << endl;
-    } else {
-        cout << "Masukan nama player pengganti: "; cin >> nama_pengganti;
-        if (is_player_sudah_ada(l, nama_pengganti)) {
-            cout << "Maaf, player pengganti sudah terdaftar di list pemain" << endl;
-        } else {
-            delete deleted;
-            alokasi_player_baru(nama_pengganti);
-            before->next = new_player;
-            new_player->next = after;
-            cout << "Berhasil mengganti " << nama_diganti << ", dengan " << nama_pengganti << endl;
-        }
-    }
-
+    subtitusi_player(l, DEFENDER);
 }
 
 
@@ -662,21 +590,20 @@ int main() {
 
     tambah_striker(&strategi1);
     tambah_striker(&strategi1);
-    tambah_midfielder(&strategi1);
-    tambah_midfielder(&strategi1);
-    tambah_defender(&strategi1);
-    tambah_defender(&strategi1);
+    tambah_striker(&strategi1);
+    tambah_striker(&strategi1);
 
-    tampil_pemain(&strategi1);
 
-    hapus_striker_v2(&strategi1);
+    tampil_striker(&strategi1);
+    
+    subtitusi_striker(&strategi1);
+    tampil_striker(&strategi1);
+    subtitusi_striker(&strategi1);
+    tampil_striker(&strategi1);
+    subtitusi_striker(&strategi1);
     tampil_striker(&strategi1);
 
-    hapus_striker_v2(&strategi1);
-    tampil_striker(&strategi1);
-
-    hapus_striker_v2(&strategi1);
-    tampil_striker(&strategi1);
+    
     
     return 0;
 }
