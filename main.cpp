@@ -126,9 +126,8 @@ Role* pilih_role(List *l, string nama_role) {
         return ((l->head)->next)->next;
     } else if (nama_role == GOALKEEPER) {
         return (((l->head)->next)->next)->next;
-    } else {
-        return nullptr; 
     }
+    return nullptr; 
 }
 
 
@@ -151,16 +150,16 @@ bool player_ada_di_role_v1(List *l, string nama_role, string nama_player) {
 }
 
 
-bool player_ada_di_role_v2(Role *r, string nama) {
+bool player_ada_di_role_v2(Role *r, string nama_player) {
     Player *cursor = r->pemain_pertama;
     if (!is_no_player(r)) {
-        if (cursor->nama_player == nama) {
+        if (cursor->nama_player == nama_player) {
             cout << "Pemain ditemukan, " << cursor->nama_player << " ada di Role " << cursor->role << endl;
             return true;
         }
         while (cursor->next != NULL) {
             cursor = cursor->next;
-            if (cursor->nama_player == nama) {
+            if (cursor->nama_player == nama_player) {
                 cout << "Pemain ditemukan, " << cursor->nama_player << " ada di Role " << cursor->role << endl;
                 return true;
             }
@@ -170,8 +169,8 @@ bool player_ada_di_role_v2(Role *r, string nama) {
 }
 
 
-bool is_player_sudah_ada(List *l, string nama) {
-    bool player_ada = player_ada_di_role_v1(l, STRIKER, nama) || player_ada_di_role_v1(l, MIDFIELDER, nama) || player_ada_di_role_v1(l, DEFENDER, nama) || player_ada_di_role_v1(l, GOALKEEPER, nama);
+bool is_player_sudah_ada(List *l, string nama_player) {
+    bool player_ada = player_ada_di_role_v1(l, STRIKER, nama_player) || player_ada_di_role_v1(l, MIDFIELDER, nama_player) || player_ada_di_role_v1(l, DEFENDER, nama_player) || player_ada_di_role_v1(l, GOALKEEPER, nama_player);
     if (player_ada) {
         return true;
     }
@@ -179,9 +178,9 @@ bool is_player_sudah_ada(List *l, string nama) {
 }
 
 
-void alokasi_player_baru(string nama) {
+void alokasi_player_baru(string nama_player) {
     Player *temp = new Player;
-    temp->nama_player = nama;
+    temp->nama_player = nama_player;
 
     new_player = temp;
 }
@@ -281,7 +280,7 @@ void hapus_player_v1(List *l, string nama_role) {
         }
 
         if (deleted == NULL) {
-        cout << nama_player << " tidak ada di role " << nama_role << endl;
+            cout << nama_player << " tidak ada di role " << nama_role << endl;
         } else {
             delete deleted;
             cout << nama_player << " berhasil dihapus" << endl;
@@ -447,7 +446,7 @@ void tampil_pemain(List *l) {
         i = tampil_role_v2(striker, i) + 1;
         i = tampil_role_v2(midfielder, i) + 1;
         i = tampil_role_v2(defender, i) + 1;
-        i = tampil_role_v2(goalkeeper, i) + 1;
+        tampil_role_v2(goalkeeper, i);
     }
 }
 
