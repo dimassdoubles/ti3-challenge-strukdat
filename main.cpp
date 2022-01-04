@@ -33,7 +33,7 @@ struct List {
 };
 
 
-Player *new_player = new Player;
+Player *new_player;
 
 
 void tambah_role(List *l, string nama, int kapasitas) {
@@ -41,7 +41,7 @@ void tambah_role(List *l, string nama, int kapasitas) {
     Role *temp =  new Role;
     temp->nama_role = nama;
     temp->kapasitas = kapasitas;
-    Role *cursor = new Role;
+    Role *cursor;
     if (is_empty) {
         l->head = temp;
     } else {
@@ -251,8 +251,7 @@ void tambah_player(List *l, string nama_role) {
 void hapus_player_v1(List *l, string nama_role) {
     Role *role = pilih_role(l, nama_role);
     Player *cursor = role->pemain_pertama;
-    Player *deleted = new Player;
-    deleted = nullptr;
+    Player *deleted = nullptr;
     string nama_player;
 
     if (is_no_player(role)) {
@@ -264,15 +263,20 @@ void hapus_player_v1(List *l, string nama_role) {
             role->pemain_pertama = cursor->next;
             deleted = cursor;
         } else {
+            cursor = cursor->next;
             while (cursor->next != NULL) {
-                cursor = cursor->next;
                 if (cursor->nama_player == nama_player) {
                     (cursor->prev)->next = cursor->next;
                     (cursor->next)->prev = cursor->prev;
                     deleted = cursor;
                     break;
                 }
+                cursor = cursor->next;
             }
+            if (cursor->nama_player == nama_player) {
+                    (cursor->prev)->next = cursor->next;
+                    deleted = cursor;
+                }
         }
 
         if (deleted == NULL) {
@@ -287,8 +291,7 @@ void hapus_player_v1(List *l, string nama_role) {
 
 
 void hapus_player_v2(Player *p) {
-    Player *deleted = new Player;
-    deleted = p;
+    Player *deleted = p;
     delete deleted;
 }
 
@@ -304,6 +307,7 @@ void hapus_role(Role *r) {
         }
         hapus_player_v2(deleted);
     }
+    r->isi = 0;
     r->pemain_pertama = nullptr;
 }
 
@@ -311,9 +315,9 @@ void hapus_role(Role *r) {
 void subtitusi_player(List *l, string nama_role) {
     Role *role = pilih_role(l, nama_role);
     Player *cursor = role->pemain_pertama;
-    Player *deleted = new Player;
-    deleted = nullptr;
+    Player *deleted = nullptr;
     bool is_pemain_pertama_diganti = false;
+    bool is_pemain_terakhir_diganti = false;
     string nama_diganti;
     string nama_pengganti;
 
@@ -325,13 +329,18 @@ void subtitusi_player(List *l, string nama_role) {
             is_pemain_pertama_diganti = true;
             deleted = cursor;
         } else {
+            cursor = cursor->next;
             while (cursor->next != NULL) {
-                cursor = cursor->next;
                 if (cursor->nama_player == nama_diganti) {
                     deleted = cursor;
                     break;
                 }
+                cursor = cursor->next;
             }
+            if (cursor->nama_player == nama_diganti) {
+                    is_pemain_terakhir_diganti = true;
+                    deleted = cursor;
+                }
         }
 
         if (deleted == NULL) {
@@ -348,6 +357,9 @@ void subtitusi_player(List *l, string nama_role) {
                     new_player->next = deleted->next;
                     (deleted->next)->prev = new_player;
                     role->pemain_pertama = new_player;
+                } else if (is_pemain_terakhir_diganti) {
+                    new_player->prev = deleted->prev;
+                    (deleted->prev)->next = new_player;
                 } else {
                     new_player->prev = deleted->prev;
                     new_player->next = deleted->next;
