@@ -42,7 +42,7 @@ void tambah_role(List *l, string nama, int kapasitas) {
     temp->nama_role = nama;
     temp->kapasitas = kapasitas;
     Role *cursor;
-    
+
     if (is_empty) {
         l->head = temp;
     } else {
@@ -221,6 +221,7 @@ void tambah_player(List *l, string nama_role) {
 
     if (is_role_full(role)) {
         cout << "Maaf, role " << nama_role << " sudah penuh" << endl;
+        tampil_role_v1(l, nama_role);
     } else {
         cout << "Masukan nama player: "; cin >> nama_player;
         if (is_player_sudah_ada(l, nama_player)) {
@@ -240,6 +241,7 @@ void tambah_player(List *l, string nama_role) {
 
             cout << nama_player << " berhasil ditambahkan ke " << nama_role << endl;
             role->isi ++;
+            tampil_role_v1(l, nama_role);
         }
     }
 }
@@ -257,6 +259,7 @@ void hapus_player_v1(List *l, string nama_role) {
     } else if (is_no_player(role)) {
         cout << "Role " << nama_role << " kosong" << endl;
     } else {
+        tampil_role_v1(l, nama_role);
         cout << "Masukan nama player: "; cin >> nama_player;
         if (cursor->nama_player == nama_player) {
             player_pertama = true;
@@ -289,6 +292,7 @@ void hapus_player_v1(List *l, string nama_role) {
             cout << nama_player << " berhasil dihapus" << endl;
             role->isi --;
             l->kuota_hapus --;
+            tampil_role_v1(l, nama_role);
         } else if (player_pertama) {
             // cout << "#cek 5" << endl;
             (deleted->next)->prev = nullptr;
@@ -297,6 +301,7 @@ void hapus_player_v1(List *l, string nama_role) {
             cout << nama_player << " berhasil dihapus" << endl;
             role->isi --;
             l->kuota_hapus --;
+            tampil_role_v1(l, nama_role);
         } else if (player_terakhir) {
             // cout << "#cek 6" << endl;
             (deleted->prev)->next = nullptr;
@@ -304,6 +309,7 @@ void hapus_player_v1(List *l, string nama_role) {
             cout << nama_player << " berhasil dihapus" << endl;
             role->isi --;
             l->kuota_hapus --;
+            tampil_role_v1(l, nama_role);
         } else {
             // cout << "#cek 1" << endl;
             (deleted->prev)->next = deleted->next;
@@ -313,6 +319,7 @@ void hapus_player_v1(List *l, string nama_role) {
             cout << nama_player << " berhasil dihapus" << endl;
             role->isi --;
             l->kuota_hapus --;
+            tampil_role_v1(l, nama_role);
         }
     }
 }
@@ -346,6 +353,7 @@ void subtitusi_player(List *l, string nama_role) {
     string nama_diganti;
     string nama_pengganti;
 
+    tampil_role_v1(l, nama_role);
     cout << "Masukan nama player yang ingin diganti: "; cin >> nama_diganti;
     if (is_no_player(role)) {
         cout << "Role " << nama_role << " kosong" << endl;
@@ -401,6 +409,7 @@ void subtitusi_player(List *l, string nama_role) {
 
                 cout << "Berhasil mengganti " << nama_diganti << " dengan " << nama_pengganti << endl;
             }
+            tampil_role_v1(l, nama_role);
         }
     }
 }
@@ -522,12 +531,12 @@ int hapus_role_v2(Role *r, int indeks_mulai, string pemain_akhir_pertandingan[7]
             cursor = cursor->next;
             pemain_akhir_pertandingan[indeks_mulai] = deleted->nama_player + " (" + r->nama_role + ")";
             indeks_mulai ++;
-            hapus_player_v2(deleted);
+            delete deleted;
             deleted = cursor;
         }
         pemain_akhir_pertandingan[indeks_mulai] = deleted->nama_player + " (" + r->nama_role + ")";
         indeks_mulai ++;
-        hapus_player_v2(deleted);
+        delete deleted;
         r->isi = 0;
         r->pemain_pertama = nullptr;
         return indeks_mulai;
@@ -541,10 +550,12 @@ void hapus_pemain_v2(List *l) {
     Role *striker = pilih_role(l, STRIKER);
     Role *midfielder = pilih_role(l, MIDFIELDER);
     Role *defender = pilih_role(l, DEFENDER);
+    Role *goalkeeper = pilih_role(l, GOALKEEPER);
 
     indeks_mulai = hapus_role_v2(striker, indeks_mulai, l->pemain_akhir_pertandingan);
     indeks_mulai = hapus_role_v2(midfielder, indeks_mulai, l->pemain_akhir_pertandingan);
     indeks_mulai = hapus_role_v2(defender, indeks_mulai, l->pemain_akhir_pertandingan);
+    hapus_role_v2(goalkeeper, indeks_mulai, l->pemain_akhir_pertandingan);
 }
 
 void tambah_list_merah(List *l, Player *p) {
@@ -655,64 +666,163 @@ bool ganti_goalkeeper(Role *striker, Role *goalkeeper) {
         return true;
 }
 
-void beri_keeper_kartu_merah(List *l) {
-    // modifikasi
-    // kartu merah ke keeper
-    Role *goalkeeper = pilih_role(l, GOALKEEPER);
+
+void kartu_merah(List *l) {
     Role *striker = pilih_role(l, STRIKER);
-    Player *deleted = goalkeeper->pemain_pertama;
-    Player *cursor = striker->pemain_pertama;
-    int i = 1;
-    bool lanjut = true;
+    Role *midfielder = pilih_role(l, MIDFIELDER);
+    Role *defender = pilih_role(l, DEFENDER);
+    Role *goalkeeper = pilih_role(l, GOALKEEPER);
+    Player *cursor;
+    Player *deleted = nullptr;
+    Role *role_player;
+    string nama_player;
+    bool belum_ketemu = true;
+    bool berhasil_kartu_merah = true;
+    bool is_empty = is_no_player(striker) && is_no_player(midfielder) && is_no_player(defender) && is_no_player(goalkeeper);
 
-    l->kartu_merah ++;
-    l->kuota_hapus --;
+    tampil_pemain(l);
 
-    if (deleted == NULL) {
-        cout << "Maaf, role Goalkeeper kosong" << endl;
-        cout << "Tidak jadi kartu merah" << endl;
-        l->kartu_merah --;
-        l->kuota_hapus ++;
-    } else if (is_no_player(striker)) {
-        cout << "Tidak ada Striker, tambah striker terlebih dahulu" << endl;
-        cout << "Tidak jadi kartu merah" << endl;
-        l->kartu_merah --;
-        l->kuota_hapus ++;
-    } else if (l->kartu_merah == 4) {
-        cout << "4 kartu merah sudah dikeluarkan, tim gugur. Pertandingan selesai" << endl;
-        tambah_list_merah(l, deleted);
-        tampil_list_merah(l);
-        delete deleted;
-        l->drop_out = true;
-        goalkeeper->pemain_pertama = nullptr;
+    if (!is_empty) {
+        // meminta input nama player yang akan diberi kartu merah
+        cout << "Masukan nama player: "; cin >> nama_player;
+
+        // mencari player yang akan diberi kartu merah
+        if (belum_ketemu && !is_no_player(striker)) {
+            // cari di striker
+            // cout << "#cek 1";
+            cursor = striker->pemain_pertama;
+            if (cursor->nama_player == nama_player) {
+                deleted = cursor;
+                role_player = striker;
+                belum_ketemu = false;
+            } else {
+                while (cursor->next != NULL) {
+                    cursor = cursor->next;
+                    if (cursor->nama_player == nama_player) {
+                        deleted = cursor;
+                        role_player = striker;
+                        belum_ketemu = false;
+                        break;
+                    }
+                }
+            }
+        } 
+        if (belum_ketemu && !is_no_player(midfielder)) {
+            // cari di midfielder
+            // cout << " #cek 2";
+            cursor = midfielder->pemain_pertama;
+            if (cursor->nama_player == nama_player) {
+                deleted = cursor;
+                role_player = midfielder;
+                belum_ketemu = false;
+            } else {
+                while (cursor->next != NULL) {
+                    cursor = cursor->next;
+                    if (cursor->nama_player == nama_player) {
+                        deleted = cursor;
+                        role_player = midfielder;
+                        belum_ketemu = false;
+                        break;
+                    }
+                }
+            }
+        } 
+        if (belum_ketemu && !is_no_player(defender)) {
+            // cari di defender
+            // cout << " #cek 3";
+            cursor = defender->pemain_pertama;
+            if (cursor->nama_player == nama_player) {
+                deleted = cursor;
+                role_player = defender;
+                belum_ketemu = false;
+            } else {
+                while (cursor->next != NULL) {
+                    cursor = cursor->next;
+                    if (cursor->nama_player == nama_player) {
+                        deleted = cursor;
+                        role_player = defender;
+                        belum_ketemu = false;
+                        break;
+                    }
+                }
+            }
+        } 
+        if (belum_ketemu && !is_no_player(goalkeeper)) {
+            // cari di goalkeeper
+            // cout << " #cek 4";
+            cursor = goalkeeper->pemain_pertama;
+            if (cursor->nama_player == nama_player) {
+                deleted = cursor;
+                role_player = goalkeeper;
+                belum_ketemu = false;
+            } else {
+                while (cursor->next != NULL) {
+                    cursor = cursor->next;
+                    if (cursor->nama_player == nama_player) {
+                        deleted = cursor;
+                        role_player = goalkeeper;
+                        belum_ketemu = false;
+                        break;
+                    }
+                }
+            }
+        } 
+        if (belum_ketemu) {
+            cout << "Player tidak ditemukan" << endl;
+            berhasil_kartu_merah = false;
+        }
+
+        if (deleted != NULL) {
+            // ketika keeper yang kena kartu merah
+            if (role_player == goalkeeper) {
+                if (l->kuota_hapus < 0) {
+                    // tidak ada perintah, lewati
+                }
+                else if(!is_no_player(striker)) {
+                    while(ganti_goalkeeper(striker, goalkeeper));
+                } 
+                else {
+                    cout << "Kartu merah dibatalkan, tidak ada striker untuk menggantikan keeper" << endl;
+                    berhasil_kartu_merah = false;
+                }
+            } 
+            // ketika player yang dihapus adalah player pertama dan terakhir
+            else if (deleted->next == deleted->prev) {
+                role_player->pemain_pertama = nullptr;
+            }
+            // ketika player yang dihapus adalah player pertama
+            else if (deleted->prev == NULL) {
+                role_player->pemain_pertama = deleted->next;
+                (deleted->next)->prev = nullptr;
+                role_player->pemain_pertama = deleted->next;
+            }
+            // ketika player yang dihapus adalah player terakhir
+            else if (deleted->next == NULL) {
+                (deleted->prev)->next = nullptr;
+            }
+            // ketika player yang dihapus ada ditengah
+            else {
+                (deleted->prev)->next = deleted->next;
+                (deleted->next)->prev = deleted->prev;
+            }
+
+        }
+
+        if (berhasil_kartu_merah) {
+            l->kartu_merah ++;
+            l->kuota_hapus --;
+            tambah_list_merah(l, deleted);
+            cout << nama_player << " mendapatkan kartu merah" << endl;
+        }
+
+        if (l->kuota_hapus < 0) {
+            cout << "Drop out, tim gugur." << endl;
+            hapus_pemain_v2(l);
+            l->drop_out = true;
+        }
         
-    } else if (l->kuota_hapus < 0) {
-        cout << "tim kekurangan pemain untuk melanjutkan pertandingan, tim gugur. Pertandingan selesai" << endl;
-        tambah_list_merah(l, deleted);
-        tampil_list_merah(l);
-        delete deleted;
-        l->drop_out = true;
-        goalkeeper->pemain_pertama = nullptr;
-    } else {
-        tambah_list_merah(l, deleted);
-
-        goalkeeper->isi --;
-
-        // challenge
-        // isi dengan striker
-        cout << i << ". " << cursor->nama_player << endl;
-        while (cursor->next != NULL) {
-            i ++;
-            cursor = cursor->next;
-            cout << i << ". " << cursor->nama_player << endl;
-        }
-
-        while (lanjut) {
-            lanjut = ganti_goalkeeper(striker, goalkeeper);
-        }
-
+        // cout << "#cek 1" << endl;
     }
-
 
 }
 
@@ -771,8 +881,8 @@ bool pilih_menu(List *l) {
         cout << "TAMBAH GOALKEEPER ----------" << endl;
         tambah_goalkeeper(l);
     } else if (pilihan == 17) {
-        cout << "BERI KEEPER KARTU MERAH ----" << endl;
-        beri_keeper_kartu_merah(l);
+        cout << "KARTU MERAH ----------------" << endl;
+        kartu_merah(l);
     } else if (pilihan == 18) {
         cout << "TAMPI STATISTIK ------------" << endl;
         tampil_statistik(l);
@@ -808,7 +918,6 @@ bool pilih_menu_drop_out(List *l) {
 int main() {
     List *strategi = new List;
     bool lanjut = true;
-    bool formasi_valid = false;
 
     cout << "INPUT FORMASI --------------" << endl;
     input_formasi(strategi);
@@ -822,7 +931,7 @@ int main() {
 
     // modifikasi dan variasi
     cout << "16. Tambah Goalkeeper" << endl;
-    cout << "17. Beri Keeper Kartu Merah" << endl;
+    cout << "17. Kartu Merah" << endl;
     cout << "18. Tampil Statistik" << endl;
     cout << "19. Tampil List Merah" << endl;
 
@@ -830,7 +939,7 @@ int main() {
     while (lanjut) {
         lanjut = pilih_menu(strategi);
         if (strategi->drop_out) {
-            cout << "\n----PERTANDINGAN SELESAI-----" << endl;
+            cout << "\n----PERTANDINGAN SELESAI----" << endl;
             lanjut = true;
 
             cout << "\nDAFTAR MENU DROP OUT -------" << endl;
